@@ -15,13 +15,14 @@ export const loginUser = TryCatch(async (req, res) => {
     const googleRes = await oauth2client.getToken(code);
     oauth2client.setCredentials(googleRes.tokens);
     const userRes = await axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`);
-    const { email, image, name } = userRes.data;
+    const { email, picture, name } = userRes.data;
+    // console.log(userRes.data);
     let user = await User.findOne({ email })
     if (!user) {
         user = await User.create({
             name,
             email,
-            image
+            image : picture
         })
     }
     const token = jwt.sign({ user }, process.env.JWT_SEC as string, {
